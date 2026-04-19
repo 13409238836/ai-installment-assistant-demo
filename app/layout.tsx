@@ -63,7 +63,9 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="/critical-fallback.css" />
       </head>
-      <body className={`${geistSans.className} font-sans antialiased`}>
+      <body
+        className={`${geistSans.className} font-sans antialiased bg-white sm:bg-gray-100 sm:flex sm:items-center sm:justify-center sm:min-h-screen`}
+      >
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

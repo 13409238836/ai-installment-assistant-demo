@@ -1519,57 +1519,33 @@ export default function FenqiLifePage() {
   const [aiPanelOpen, setAiPanelOpen] = useState(false)
 
   return (
-    <div
-      className="cff-root relative overflow-hidden min-h-[100dvh] bg-[#eef0f3] flex items-center justify-center p-4"
-      style={{
-        minHeight: "100dvh",
-        boxSizing: "border-box",
-        backgroundColor: "#eef0f3",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 16,
-      }}
+    <main
+      className={cn(
+        "cff-app-shell w-full h-full min-h-screen bg-white relative overflow-x-hidden flex flex-col",
+        "sm:max-w-[390px] sm:h-[844px] sm:min-h-[844px] sm:my-8 sm:border-[8px] sm:border-gray-800 sm:rounded-[3rem] sm:shadow-2xl sm:overflow-hidden",
+      )}
     >
-      {/* iPhone 14 逻辑分辨率 390×844；内联样式为 CSS 未加载时的兜底 */}
-      <div
-        className="cff-phone relative w-[390px] h-[844px] bg-white rounded-[44px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] border border-black/5 overflow-hidden"
-        style={{
-          position: "relative",
-          width: 390,
-          maxWidth: "calc(100vw - 32px)",
-          height: 844,
-          maxHeight: "min(844px, 100dvh)",
-          backgroundColor: "#fff",
-          borderRadius: 44,
-          overflow: "hidden",
-          boxSizing: "border-box",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
-          border: "1px solid rgba(0,0,0,0.05)",
-        }}
-      >
-        <div className="cff-scroll scrollbar-hide h-full overflow-y-auto bg-gray-50 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
-          {/* Header - Sticky at top-0 z-30 */}
-          <Header />
-          
-          {/* Top Content Sections */}
-          <CreditCardSection onOpenAiPanel={() => setAiPanelOpen(true)} />
-          <IPhoneBanner />
-          <KongKongZone />
-          <DailyCheckIn />
+      <div className="cff-scroll scrollbar-hide min-h-0 flex-1 overflow-y-auto bg-gray-50 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+        {/* Header - Sticky at top-0 z-30 */}
+        <Header />
 
-          {/* Sticky Search Bar with Intersection Observer - top-14 z-20 */}
-          <StickySearchBar />
+        {/* Top Content Sections */}
+        <CreditCardSection onOpenAiPanel={() => setAiPanelOpen(true)} />
+        <IPhoneBanner />
+        <KongKongZone />
+        <DailyCheckIn />
 
-          {/* Product List - z-10 so it goes under sticky bar */}
-          <ProductWaterfall />
+        {/* Sticky Search Bar with Intersection Observer - top-14 z-20 */}
+        <StickySearchBar />
 
-          {/* Bottom Padding */}
-          <div className="h-3" />
-        </div>
-        <AiFloatingFab onOpen={() => setAiPanelOpen(true)} />
-        <AiChatPanel open={aiPanelOpen} onClose={() => setAiPanelOpen(false)} />
+        {/* Product List - z-10 so it goes under sticky bar */}
+        <ProductWaterfall />
+
+        {/* Bottom Padding */}
+        <div className="h-3" />
       </div>
-    </div>
+      <AiFloatingFab onOpen={() => setAiPanelOpen(true)} />
+      <AiChatPanel open={aiPanelOpen} onClose={() => setAiPanelOpen(false)} />
+    </main>
   )
 }

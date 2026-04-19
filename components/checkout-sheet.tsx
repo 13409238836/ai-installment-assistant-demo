@@ -128,7 +128,7 @@ export function CheckoutSheet({ open, onClose, items }: CheckoutSheetProps) {
       {/* iOS Bottom Sheet：贴底 fixed，无居中留白；入场自屏幕下缘 translate-y-full → 0 */}
       <div
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-[5001] mx-auto flex max-h-[min(88dvh,844px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[20px] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform sm:rounded-t-3xl",
+          "fixed bottom-0 left-0 right-0 z-[5001] mx-auto flex max-h-[min(88dvh,844px)] w-full flex-col overflow-hidden rounded-t-[20px] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform sm:max-w-[390px] sm:rounded-t-3xl",
           sheetEnter ? "translate-y-0" : "translate-y-full",
         )}
       >

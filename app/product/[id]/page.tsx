@@ -27,8 +27,9 @@ export default async function ProductPage({ params }: PageProps) {
   const hero = pool.detailImage ?? pool.image
 
   return (
-    <div className="min-h-dvh bg-[#f6f6f6] pb-28 [font-family:'PingFang_SC','PingFang SC','SF Pro Display','Helvetica Neue',sans-serif]">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/95 px-3 py-2 backdrop-blur">
+    <main className="relative mx-auto flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-white [font-family:'PingFang_SC','PingFang SC','SF Pro Display','Helvetica Neue',sans-serif] sm:my-8 sm:h-[844px] sm:min-h-[844px] sm:max-w-[390px] sm:overflow-hidden sm:rounded-[3rem] sm:border-[8px] sm:border-gray-800 sm:shadow-2xl">
+      <div className="relative min-h-0 flex-1 overflow-y-auto bg-[#f6f6f6] pb-28">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/95 px-3 py-2 backdrop-blur">
         <Link href="/" className="rounded-full p-2 text-gray-800 hover:bg-gray-100" aria-label="返回首页">
           <ChevronLeft className="h-5 w-5" />
         </Link>
@@ -36,7 +37,7 @@ export default async function ProductPage({ params }: PageProps) {
         <button type="button" className="rounded-full p-2 text-gray-600 hover:bg-gray-100" aria-label="收藏">
           <Star className="h-5 w-5" />
         </button>
-      </header>
+        </header>
 
       <div className="bg-white">
         <div className="relative h-[min(52vh,420px)] w-full bg-white">
@@ -85,14 +86,18 @@ export default async function ProductPage({ params }: PageProps) {
         <p className="mt-2 text-sm text-gray-500">商品配图来自你提供的截图，价格与分期信息以页面展示为准。</p>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3">
-        <Link
-          href="/"
-          className="flex h-12 w-full items-center justify-center rounded-full bg-[#ff1f4b] text-lg font-semibold text-white"
-        >
-          免息购 ¥{pool.itemTotalPrice}
-        </Link>
       </div>
-    </div>
+
+      <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-gray-100 bg-white pb-[max(12px,env(safe-area-inset-bottom))] pt-3">
+        <div className="w-full px-4">
+          <Link
+            href="/"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-[#ff1f4b] text-lg font-semibold text-white"
+          >
+            免息购 ¥{pool.itemTotalPrice}
+          </Link>
+        </div>
+      </div>
+    </main>
   )
 }

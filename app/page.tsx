@@ -787,8 +787,8 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
 
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 rounded-t-3xl border-t border-gray-100 bg-gradient-to-b from-[#ffffff] to-[#fbfbfd] transition-[transform,height] duration-300 ease-in-out",
-          isFullscreen ? "h-full" : "h-[85%]",
+          "absolute bottom-0 left-0 right-0 border-t border-gray-100 bg-gradient-to-b from-[#ffffff] to-[#fbfbfd] transition-[transform,height] duration-300 ease-in-out",
+          isFullscreen ? "h-full rounded-none" : "h-[85%] rounded-t-3xl",
           open ? "translate-y-0" : "translate-y-full",
         )}
       >

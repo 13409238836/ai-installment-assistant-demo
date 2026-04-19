@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import type { ProductPoolItem } from "@/data/products"
 import { BATCH_EIGHT_DETAIL_OVERRIDES } from "@/lib/catalog-batch-eight"
 import { cn } from "@/lib/utils"
@@ -25,9 +26,10 @@ export function WaterfallProductCard({ item, className }: WaterfallProductCardPr
     .join(" · ")
 
   return (
-    <div
+    <Link
+      href={`/product/${item.id}`}
       className={cn(
-        "cff-product-card bg-white rounded-2xl p-2.5 flex flex-col overflow-hidden shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-opacity duration-150",
+        "cff-product-card block bg-white rounded-2xl p-2.5 flex flex-col overflow-hidden text-inherit no-underline shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-opacity duration-150 outline-none ring-offset-2 focus-visible:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400",
         className,
       )}
     >
@@ -63,6 +65,6 @@ export function WaterfallProductCard({ item, className }: WaterfallProductCardPr
           )}
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

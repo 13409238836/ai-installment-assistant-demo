@@ -46,8 +46,8 @@
 ## 安装
 
 ```bash
-git clone <你的仓库地址>
-cd my-project
+git clone https://github.com/13409238836/ai-installment-assistant-demo.git
+cd ai-installment-assistant-demo
 npm install
 ```
 

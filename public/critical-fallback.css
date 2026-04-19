@@ -1,0 +1,593 @@
+/**
+ * 当 Next 打包的 Tailwind CSS 未能加载（内置浏览器缓存、chunk 404 等）时，
+ * 仍能保证「分期生活」首页手机框内主要区块可读的排版。
+ * 与 Tailwind 并存：类名以 cff- 为前缀，避免污染。
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.cff-root {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #eef0f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.cff-phone {
+  position: relative;
+  width: 390px;
+  max-width: calc(100vw - 32px);
+  height: 844px;
+  max-height: min(844px, 92vh);
+  max-height: min(844px, 100dvh);
+  background: #fff;
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cff-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f9fafb;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Header */
+.cff-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 56px;
+}
+
+.cff-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cff-header h1 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #000;
+  font-family: "PingFang SC", "SF Pro Display", "Helvetica Neue", sans-serif;
+}
+
+.cff-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cff-header .cff-icon-btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid #9ca3af;
+}
+
+/* 分期卡片 */
+.cff-credit {
+  margin: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #5b6be8 0%, #8b7cf7 100%);
+  color: #fff;
+}
+
+.cff-credit-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cff-credit-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cff-credit-left p {
+  margin: 0;
+}
+
+.cff-credit .cff-balance-label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cff-credit .cff-balance-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffd6e7;
+}
+
+.cff-credit button[aria-label="智能方案管家"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cff-credit button[aria-label="智能方案管家"] svg {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.cff-credit-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 16px;
+}
+
+.cff-credit-links > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.cff-credit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cff-credit-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* iPhone 横幅 */
+.cff-iphone-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px;
+  height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a1a2e 0%, #252540 50%, #3d2a4d 100%);
+}
+
+.cff-iphone-banner .cff-banner-top {
+  padding: 16px 16px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cff-iphone-banner .cff-banner-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+}
+
+.cff-iphone-banner .cff-banner-title-row svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.cff-iphone-banner .cff-banner-title-row span {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.cff-iphone-phones {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+}
+
+/* 与 Tailwind -space-x-5 等效：侧向重叠层叠 */
+.cff-iphone-phones .cff-mock-phone + .cff-mock-phone {
+  margin-left: -20px;
+}
+
+/* 三台手机为纯 CSS 示意，避免 Tailwind 未加载时整块「消失」 */
+.cff-mock-phone {
+  flex-shrink: 0;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.cff-mock-phone-sm {
+  width: 54px;
+  height: 96px;
+}
+
+.cff-mock-phone-md {
+  width: 66px;
+  height: 114px;
+}
+
+.cff-mock-phone--left {
+  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: rotate(-6deg);
+  z-index: 10;
+}
+
+.cff-mock-phone--center {
+  background: linear-gradient(to bottom, #fb923c, #ea580c);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+}
+
+.cff-mock-phone--right {
+  background: linear-gradient(to bottom, #475569, #0f172a);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: rotate(6deg);
+  z-index: 10;
+}
+
+.cff-mock-phone-bezel {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.cff-mock-phone--center .cff-mock-phone-bezel {
+  border-color: rgba(253, 186, 116, 0.85);
+  padding-top: 8px;
+}
+
+.cff-mock-notch-sm {
+  width: 24px;
+  height: 6px;
+  background: #9ca3af;
+  border-radius: 9999px;
+}
+
+.cff-mock-notch-md {
+  width: 32px;
+  height: 8px;
+  background: #c2410c;
+  border-radius: 9999px;
+}
+
+.cff-mock-notch-dark {
+  width: 24px;
+  height: 6px;
+  background: #64748b;
+  border-radius: 9999px;
+}
+
+.cff-iphone-cta {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  padding: 4px 16px 12px;
+}
+
+.cff-iphone-cta button {
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #fff;
+  color: #111;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+/* 四宫格 */
+.cff-kong {
+  margin: 16px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cff-kong-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.cff-kong-grid > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cff-kong-grid .cff-kong-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cff-kong-grid span {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* 签到 */
+.cff-daily {
+  margin: 16px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cff-daily-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cff-daily-days {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.cff-daily-slot {
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.cff-daily-slot--narrow {
+  width: 56px;
+  padding: 8px;
+  background: #f3f4f6;
+}
+
+.cff-daily-slot--active {
+  width: 112px;
+  min-height: 148px;
+  padding: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.cff-daily-slot .cff-daily-claim-btn {
+  margin-top: 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  border: none;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 吸顶搜索区 */
+.cff-sticky-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 20;
+  background: #f9fafb;
+}
+
+.cff-sticky-bar.cff-sticky-active {
+  background: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.cff-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.cff-search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  padding: 6px 12px;
+}
+
+.cff-tabs-row {
+  padding: 0 12px;
+  border-top: 1px solid #f3f4f6;
+  overflow-x: auto;
+}
+
+.cff-tabs-row > div {
+  display: flex;
+  gap: 20px;
+}
+
+.cff-tabs-row button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 10px 0 8px;
+  font-size: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.cff-tabs-row button.cff-tab-active {
+  font-weight: 600;
+  color: #111;
+}
+
+/* 与标签文字同列居中；非激活用 opacity-0 占位避免高度跳动 */
+.cff-tabs-row .cff-tab-indicator {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 9999px;
+  background: #111;
+  flex-shrink: 0;
+}
+
+/* 瀑布流 */
+.cff-waterfall {
+  position: relative;
+  z-index: 10;
+  padding: 12px;
+}
+
+.cff-waterfall-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cff-product-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+.cff-product-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.cff-product-card .aspect-square,
+.cff-product-card [class*="aspect-square"],
+.cff-product-thumb {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: linear-gradient(to bottom, rgba(243, 244, 246, 0.6), rgba(229, 231, 235, 0.9));
+}
+
+.cff-product-meta {
+  display: grid;
+  grid-template-rows: 16px minmax(20px, auto) 22px;
+  gap: 4px;
+  align-items: start;
+  min-width: 0;
+}
+
+.cff-product-title {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  min-height: 16px;
+}
+
+/* AI 悬浮球：主 CSS 未加载时仍固定在手机框右下角之上 */
+.cff-ai-fab-host {
+  position: absolute;
+  right: 16px;
+  bottom: 96px;
+  z-index: 999;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.cff-ai-fab-host .cff-ai-fab-hit {
+  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+}
+
+/* Lucide：无 Tailwind 时限制默认尺寸 */
+.cff-scroll svg {
+  display: block;
+}
+
+.cff-header svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cff-credit-links svg,
+.cff-credit-footer svg {
+  width: 12px;
+  height: 12px;
+}
+
+.cff-kong-grid svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cff-search-row svg {
+  width: 16px;
+  height: 16px;
+}

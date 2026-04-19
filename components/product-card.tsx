@@ -4,8 +4,7 @@ import type { ProductPoolItem } from "@/data/products"
 import { BATCH_EIGHT_DETAIL_OVERRIDES } from "@/lib/catalog-batch-eight"
 import { cn } from "@/lib/utils"
 
-const IMAGE_FALLBACK =
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+const IMAGE_FALLBACK = "/placeholder.svg"
 
 export type WaterfallProductCardProps = {
   item: ProductPoolItem

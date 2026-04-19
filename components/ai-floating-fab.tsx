@@ -45,18 +45,15 @@ export function AiFloatingFab({ onOpen }: AiFloatingFabProps) {
     const dx = e.clientX - px
     const dy = e.clientY - py
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) movedRef.current = true
+
     const parent = wrapperRef.current?.parentElement
-    if (!parent) {
-      setOffset({ x: ox + dx, y: oy + dy })
-      return
-    }
-    const parentRect = parent.getBoundingClientRect()
     const baseRect = wrapperRef.current?.getBoundingClientRect()
-    if (!baseRect) {
+    if (!parent || !baseRect) {
       setOffset({ x: ox + dx, y: oy + dy })
       return
     }
 
+    const parentRect = parent.getBoundingClientRect()
     const baseX = baseRect.left - ox
     const baseY = baseRect.top - oy
     const nextX = ox + dx
@@ -88,7 +85,11 @@ export function AiFloatingFab({ onOpen }: AiFloatingFabProps) {
   return (
     <div
       ref={wrapperRef}
-      className="cff-ai-fab-host"
+      className={cn(
+        /* absolute：相对页面根级 main（手机框 / 全屏容器），始终在设备显示区内 */
+        "cff-ai-fab-host absolute bottom-6 right-6 z-40 h-16 w-16",
+        "pointer-events-none box-border",
+      )}
       style={{ transform: `translate(${offset.x}px, ${offset.y}px)`, touchAction: "none" }}
     >
       <div className="cff-ai-fab-hit relative h-full w-full">

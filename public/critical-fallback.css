@@ -557,12 +557,12 @@
   min-height: 16px;
 }
 
-/* AI 悬浮球：主 CSS 未加载时仍固定在手机框右下角之上 */
+/* AI 悬浮球：相对 main 定位，落在设备（手机框或全屏主区域）内右下角 */
 .cff-ai-fab-host {
   position: absolute;
-  right: 16px;
-  bottom: 96px;
-  z-index: 999;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 40;
   width: 64px;
   height: 64px;
   pointer-events: none;

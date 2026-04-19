@@ -210,6 +210,8 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
   const dragStartY = useRef<number | null>(null)
   const loadingTimerRef = useRef<number | null>(null)
   const resetAnimationTimerRef = useRef<number | null>(null)
+  const replaceToastTimerRef = useRef<number | null>(null)
+  const [replaceToast, setReplaceToast] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "ai", type: "text", content: welcomeText },
   ])
@@ -241,6 +243,11 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
         window.clearTimeout(resetAnimationTimerRef.current)
         resetAnimationTimerRef.current = null
       }
+      if (replaceToastTimerRef.current) {
+        window.clearTimeout(replaceToastTimerRef.current)
+        replaceToastTimerRef.current = null
+      }
+      setReplaceToast(null)
       setIsResetAnimating(false)
       setEditingSessionId(null)
       setDeletingSessionId(null)
@@ -254,6 +261,9 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
       }
       if (resetAnimationTimerRef.current) {
         window.clearTimeout(resetAnimationTimerRef.current)
+      }
+      if (replaceToastTimerRef.current) {
+        window.clearTimeout(replaceToastTimerRef.current)
       }
     }
   }, [])
@@ -719,13 +729,25 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
     }
   }, [])
 
+  const showReplaceToast = useCallback((message: string) => {
+    if (replaceToastTimerRef.current) {
+      window.clearTimeout(replaceToastTimerRef.current)
+      replaceToastTimerRef.current = null
+    }
+    setReplaceToast(message)
+    replaceToastTimerRef.current = window.setTimeout(() => {
+      setReplaceToast(null)
+      replaceToastTimerRef.current = null
+    }, 2500)
+  }, [])
+
   const handleReplaceItem = useCallback(
     (messageIndex: number, itemIndex: number, planItems: ProductPoolItem[]) => {
       const current = planItems[itemIndex]
       if (!current) return
       const replacement = getAlternativeProduct(current, productPool)
       if (!replacement) {
-        window.alert("暂无更多同类商品")
+        showReplaceToast("暂无更多同类商品")
         return
       }
       setMessages((prev) => {
@@ -744,7 +766,7 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
         setSelectedProduct(replacement)
       }
     },
-    [clonePlanItems, productPool, selectedProduct],
+    [clonePlanItems, productPool, selectedProduct, showReplaceToast],
   )
 
   const selectedProductDetail = selectedProduct ? getProductDetail(selectedProduct) : null
@@ -1095,6 +1117,16 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
                   {selectedProductDetail?.ctaText ?? "立即购买"}
                 </button>
               </div>
+            </div>
+          )}
+
+          {replaceToast && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="pointer-events-none absolute bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-[110] max-w-[min(90%,280px)] -translate-x-1/2 rounded-xl bg-gray-900/90 px-4 py-2.5 text-center text-sm font-medium text-white shadow-lg"
+            >
+              {replaceToast}
             </div>
           )}
 

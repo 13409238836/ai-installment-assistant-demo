@@ -116,6 +116,14 @@ function CreditCardSection({ onOpenAiPanel }: { onOpenAiPanel: () => void }) {
   )
 }
 
+/** 方案卡片：金额先保留两位小数再本地化展示 */
+function formatPlanYuanDisplay(value: number) {
+  return Number(value.toFixed(2)).toLocaleString("zh-CN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
 function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const quickPrompts = ["月供 200 配齐电竞外设", "考研无纸化学习套装"]
   const welcomeText =
@@ -183,16 +191,33 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
     [productPool],
   )
   const getPlanStats = useCallback((planItems: ProductPoolItem[]) => {
-    const allInstallments = planItems.map((item) => item.installments)
-    const isMixedValue = new Set(allInstallments).size > 1
-    const minInstallmentsValue = Math.min(...allInstallments)
-    const totalMonthlyValue = planItems.reduce((sum, item) => sum + item.installmentPrice, 0)
-    const totalPriceValue = planItems.reduce((sum, item) => sum + item.itemTotalPrice, 0)
+    if (planItems.length === 0) {
+      return {
+        minTerm: 0,
+        maxTerm: 0,
+        phase1Monthly: 0,
+        phase2Monthly: 0,
+        totalPrice: 0,
+        isUniformTerms: true,
+      }
+    }
+    const terms = planItems.map((item) => item.installments)
+    const minTerm = Math.min(...terms)
+    const maxTerm = Math.max(...terms)
+    /** 单期月供：商品总价 / 该商品分期期数（与阶梯文案一致） */
+    const itemMonthly = (it: ProductPoolItem) => it.itemTotalPrice / it.installments
+    const phase1Monthly = planItems.reduce((sum, it) => sum + itemMonthly(it), 0)
+    const phase2Monthly = planItems
+      .filter((it) => it.installments > minTerm)
+      .reduce((sum, it) => sum + itemMonthly(it), 0)
+    const totalPrice = planItems.reduce((sum, it) => sum + it.itemTotalPrice, 0)
     return {
-      totalMonthly: totalMonthlyValue,
-      totalPrice: totalPriceValue,
-      isMixed: isMixedValue,
-      minInstallments: minInstallmentsValue,
+      minTerm,
+      maxTerm,
+      phase1Monthly,
+      phase2Monthly,
+      totalPrice,
+      isUniformTerms: minTerm === maxTerm,
     }
   }, [])
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -931,21 +956,32 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
                 )}
                 {message.type === "card" && (() => {
                   const planItems = message.items ?? []
-                  const { totalMonthly, totalPrice, isMixed, minInstallments } = getPlanStats(planItems)
+                  const { minTerm, maxTerm, phase1Monthly, phase2Monthly, totalPrice, isUniformTerms } = getPlanStats(planItems)
+                  const phase1Str = formatPlanYuanDisplay(phase1Monthly)
+                  const phase2Str = formatPlanYuanDisplay(phase2Monthly)
+                  const totalStr = formatPlanYuanDisplay(totalPrice)
                   return (
                     <div className="w-[88%] rounded-2xl border border-gray-200 bg-white p-3 shadow-[0_10px_25px_rgba(17,24,39,0.08)]">
                       <p className="flex items-center gap-1.5 text-[14px] font-semibold text-gray-800">
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
                         <span>{message.planTitle ?? "已为您生成：智能精选分期方案"}</span>
                       </p>
-                      <div className="mt-3 rounded-xl bg-gradient-to-r from-sky-50 via-white to-emerald-50 px-3 py-3">
-                        <p className="text-xs text-gray-500">{isMixed ? `前 ${minInstallments} 期预估月供` : "预估月供"}</p>
-                        <p className="text-[24px] font-bold tracking-tight text-sky-700">
-                          ¥{totalMonthly.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/月
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          总价 ¥{totalPrice.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
+                      <div className="mt-3 rounded-xl border border-slate-100/50 bg-slate-50 p-4">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-slate-500">
+                            {isUniformTerms ? `分 ${maxTerm} 期预估月供` : `前 ${minTerm} 期预估月供`}
+                          </p>
+                          <p className="text-xs text-slate-400">总价 ¥{totalStr}</p>
+                        </div>
+                        <div className="mt-1 flex items-baseline">
+                          <p className="text-4xl font-bold tracking-tight text-slate-800">¥{phase1Str}</p>
+                          <span className="ml-1 text-sm font-normal text-slate-500">/ 月</span>
+                        </div>
+                        {!isUniformTerms && (
+                          <p className="mt-2.5 inline-flex items-center rounded-md border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600">
+                            第 {minTerm + 1}-{maxTerm} 期降至 ¥{phase2Str}/月
+                          </p>
+                        )}
                       </div>
                       <div className="mt-3 space-y-2">
                         {planItems.map((item, itemIndex) => {

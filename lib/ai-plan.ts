@@ -31,9 +31,11 @@ export type GeneratePlanOutcome =
   | { kind: "plan"; planTitle: string; items: ProductPoolItemDTO[] }
   | { kind: "refusal"; message: string }
 
-type ShoppingPayload = {
-  type: "shopping"
-  plan: { planTitle: string; items: ProductPoolItemDTO[] }
+/** 多轮修改时随请求带给后端的「当前屏幕方案」快照（1-based 序号） */
+export type CurrentPlanSnapshotItem = {
+  index: number
+  id: string
+  name: string
 }
 
 /**
@@ -43,11 +45,16 @@ type ShoppingPayload = {
 export async function generatePlanFromLLM(
   userMessage: string,
   currentPool: ProductPoolItemDTO[],
+  currentPlanSnapshot?: CurrentPlanSnapshotItem[] | null,
 ): Promise<GeneratePlanOutcome> {
   const res = await fetch("/api/ai-plan", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userMessage, productPool: currentPool }),
+    body: JSON.stringify({
+      userMessage,
+      productPool: currentPool,
+      ...(currentPlanSnapshot && currentPlanSnapshot.length > 0 ? { currentPlan: currentPlanSnapshot } : {}),
+    }),
   })
 
   let data: unknown

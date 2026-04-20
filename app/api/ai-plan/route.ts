@@ -12,9 +12,19 @@ type PoolItem = {
   detailImage?: string
 }
 
-function buildSystemPrompt(productPool: PoolItem[]) {
+type CurrentPlanRow = { index: number; id: string; name: string }
+
+function buildSystemPrompt(productPool: PoolItem[], currentPlan?: CurrentPlanRow[]) {
   const poolJson = JSON.stringify(productPool)
+  const snapshotJson =
+    currentPlan?.length && currentPlan.length > 0
+      ? JSON.stringify(currentPlan)
+      : "无（首轮对话或尚未生成方案）。若用户要求修改某件商品但无本段数据，请按全新需求从商品库生成。"
+
   return `你是「分期生活」里的智能精算师助手，只负责**意图识别**与**可选的商品搭配方案**输出。你必须**只输出一个 JSON 对象**，不要 Markdown 代码围栏，不要额外说明文字。
+
+【输入纠错与容错规则】
+用户的输入可能存在拼写错误、多余空格或简写（例如将「air」打成「ai r」，将「pro」打成「pr o」）。在进行意图识别和商品库检索前，你必须先在语义层面对用户的输入进行自动纠错和词义聚合，将其映射为标准的商品型号后再去检索。**绝对不能因为多余的空格直接判定为无商品！**
 
 【第一步：意图识别（必须遵守）】
 先判断用户这句话是否属于以下**购物/分期场景**之一：
@@ -27,6 +37,11 @@ function buildSystemPrompt(productPool: PoolItem[]) {
 - **不得**因为句子里没有「买」「购买」「推荐一下」「帮我选」等动词，就把纯商品名判成闲聊；缺少动词**不构成**使用 chat 的理由。
 
 若用户只是在**闲聊、身份问答、无关话题**（例如「你是谁」「你在干嘛」「天气如何」），且**明显不是**商品名/品类名/型号检索，则**不要**从商品库中选品，**不要**编造商品，此时才使用 type "chat"。
+
+【上下文继承规则】
+如果用户指令是修改或替换当前方案中的某件商品（如「第一个换成 xx」「第二件换 ipad」），你必须保留当前方案中未被提及的其他所有商品，仅替换用户要求修改的那一件。最终输出的 JSON 必须包含修改后的完整商品组合（plan.items 需为**完整列表**）。**当前方案状态如下：**
+${snapshotJson}
+若上表为「无」或为空，则按全新导购处理；若上表有数据，则**不得**在未获用户明确同意时丢弃其中任意一件商品。
 
 【第二步：输出结构（必须严格遵守）】
 仅允许两种顶层结构：
@@ -121,6 +136,22 @@ function parseModelPayload(content: string): ModelJson | null {
   }
 }
 
+/** 解析前端传来的当前方案快照（序号从 1 开始） */
+function normalizeCurrentPlan(raw: unknown): CurrentPlanRow[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined
+  const out: CurrentPlanRow[] = []
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue
+    const o = row as Record<string, unknown>
+    const id = typeof o.id === "string" ? o.id.trim() : ""
+    const name = typeof o.name === "string" ? o.name.trim() : ""
+    const idx = typeof o.index === "number" && Number.isFinite(o.index) ? Math.floor(o.index) : NaN
+    if (!id || !name || idx < 1) continue
+    out.push({ index: idx, id, name })
+  }
+  return out.length ? out.sort((a, b) => a.index - b.index) : undefined
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.DASHSCOPE_API_KEY?.trim()
   if (!apiKey) {
@@ -130,7 +161,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  let body: { userMessage?: string; productPool?: PoolItem[] }
+  let body: { userMessage?: string; productPool?: PoolItem[]; currentPlan?: unknown }
   try {
     body = await request.json()
   } catch {
@@ -139,6 +170,7 @@ export async function POST(request: NextRequest) {
 
   const userMessage = typeof body.userMessage === "string" ? body.userMessage.trim() : ""
   const productPool = Array.isArray(body.productPool) ? body.productPool : []
+  const currentPlan = normalizeCurrentPlan(body.currentPlan)
   if (!userMessage) {
     return NextResponse.json({ error: "userMessage 不能为空" }, { status: 400 })
   }
@@ -146,7 +178,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "productPool 不能为空" }, { status: 400 })
   }
 
-  const systemContent = buildSystemPrompt(productPool)
+  const systemContent = buildSystemPrompt(productPool, currentPlan)
   const budgetYuan = extractMonthlyBudgetYuan(userMessage)
 
   try {

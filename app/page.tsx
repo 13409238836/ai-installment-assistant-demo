@@ -25,7 +25,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { AI_CHAT_INTENT_FIXED_REPLY, generatePlanFromLLM } from "@/lib/ai-plan"
+import {
+  AI_CHAT_INTENT_FIXED_REPLY,
+  generatePlanFromLLM,
+  type CurrentPlanSnapshotItem,
+} from "@/lib/ai-plan"
 import { BATCH_EIGHT_DETAIL_OVERRIDES } from "@/lib/catalog-batch-eight"
 import { getAlternativeProduct } from "@/lib/get-alternative-product"
 import { BATCH_EIGHT_IDS, PRODUCT_POOL, type ProductPoolItem as DataProductPoolItem } from "@/data/products"
@@ -540,11 +544,23 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
       return
     }
 
+    /** 多轮修改：把当前屏幕上最新一条方案卡片的商品带给后端，避免模型丢弃未提及的 SKU */
+    const lastPlanMessage = [...messages]
+      .reverse()
+      .find((m) => m.role === "ai" && m.type === "card" && (m.items?.length ?? 0) > 0)
+    const currentPlanSnapshot: CurrentPlanSnapshotItem[] | undefined = lastPlanMessage?.items?.length
+      ? lastPlanMessage.items.map((item, idx) => ({
+          index: idx + 1,
+          id: item.id,
+          name: item.name,
+        }))
+      : undefined
+
     setIsLoading(true)
     setMessages((prev) => [...prev, { role: "user", type: "text", content: text }])
 
     try {
-      const outcome = await generatePlanFromLLM(text, productPool)
+      const outcome = await generatePlanFromLLM(text, productPool, currentPlanSnapshot)
       if (outcome.kind === "chat") {
         setMessages((prev) => [...prev, { role: "ai", type: "text", content: AI_CHAT_INTENT_FIXED_REPLY }])
         return
@@ -589,7 +605,7 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
     } finally {
       setIsLoading(false)
     }
-  }, [clonePlanItems, isLoading, inputValue, pickScenario, productPool])
+  }, [clonePlanItems, isLoading, inputValue, messages, pickScenario, productPool])
 
   const onTopAreaPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId)

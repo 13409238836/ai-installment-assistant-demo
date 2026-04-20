@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { generatePlanFromLLM } from "@/lib/ai-plan"
+import { AI_CHAT_INTENT_FIXED_REPLY, generatePlanFromLLM } from "@/lib/ai-plan"
 import { BATCH_EIGHT_DETAIL_OVERRIDES } from "@/lib/catalog-batch-eight"
 import { getAlternativeProduct } from "@/lib/get-alternative-product"
 import { BATCH_EIGHT_IDS, PRODUCT_POOL, type ProductPoolItem as DataProductPoolItem } from "@/data/products"
@@ -519,15 +519,23 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
     setMessages((prev) => [...prev, { role: "user", type: "text", content: text }])
 
     try {
-      const plan = await generatePlanFromLLM(text, productPool)
+      const outcome = await generatePlanFromLLM(text, productPool)
+      if (outcome.kind === "chat") {
+        setMessages((prev) => [...prev, { role: "ai", type: "text", content: AI_CHAT_INTENT_FIXED_REPLY }])
+        return
+      }
+      if (outcome.kind === "refusal") {
+        setMessages((prev) => [...prev, { role: "ai", type: "text", content: outcome.message }])
+        return
+      }
       setMessages((prev) => [
         ...prev,
         {
           role: "ai",
           type: "card",
           content: "llm-plan",
-          planTitle: plan.planTitle,
-          items: clonePlanItems(plan.items),
+          planTitle: outcome.planTitle,
+          items: clonePlanItems(outcome.items),
         },
       ])
     } catch (e) {
@@ -898,13 +906,27 @@ function AiChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) 
                 {message.type === "text" && (
                   <div
                     className={cn(
-                      "max-w-[88%] rounded-2xl px-4 py-3 text-[14px] leading-6 shadow-sm",
+                      "max-w-[88%] rounded-2xl px-4 py-3 text-[14px] shadow-sm",
                       message.role === "ai"
                         ? "rounded-tl-md bg-gray-100 text-gray-700"
-                        : "rounded-tr-md bg-violet-500 text-white",
+                        : "rounded-tr-md bg-violet-500 text-white leading-6",
                     )}
                   >
-                    {message.content}
+                    {message.role === "ai" ? (
+                      message.content.split(/\n\n+/).map((para, i) => (
+                        <p
+                          key={i}
+                          className={cn(
+                            "break-words leading-relaxed",
+                            i === 0 ? "text-[14px] text-gray-800" : "mt-3 text-[13px] leading-snug text-gray-600",
+                          )}
+                        >
+                          {para}
+                        </p>
+                      ))
+                    ) : (
+                      <p className="whitespace-pre-wrap break-words leading-6">{message.content}</p>
+                    )}
                   </div>
                 )}
                 {message.type === "card" && (() => {
